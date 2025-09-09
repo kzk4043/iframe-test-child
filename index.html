@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>子ページ</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #e3f2fd;
+        }
+        h2 {
+            color: #1976d2;
+        }
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        button, a {
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+        }
+        button {
+            background-color: #4caf50;
+            color: white;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        a {
+            background-color: #2196f3;
+            color: white;
+        }
+        a:hover {
+            background-color: #1976d2;
+        }
+        .info {
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border: 1px solid #90caf9;
+        }
+        .log {
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+            border: 1px solid #90caf9;
+        }
+        .log-entry {
+            margin: 5px 0;
+            padding: 5px;
+            background-color: #e3f2fd;
+            border-radius: 3px;
+            font-family: monospace;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <h2>子ページ（child.html）- iframe内</h2>
+    
+    <div class="info">
+        <p><strong>このページはiframe内に表示されています</strong></p>
+        <p>以下のボタンやリンクをクリックして、異なる遷移方法を試してください。</p>
+    </div>
+
+    <div class="button-group">
+        <button onclick="navigateWithPostMessage()">
+            postMessageで親ページを遷移
+        </button>
+        
+        <button onclick="navigateParentDirect()">
+            親ページを直接遷移（同一オリジンのみ）
+        </button>
+        
+        <a href="https://www.google.com" target="_self">
+            通常のリンク（iframe内で遷移）
+        </a>
+        
+        <a href="https://www.google.com" target="_parent">
+            target="_parent"（親フレームで遷移）
+        </a>
+        
+        <a href="https://www.google.com" target="_top">
+            target="_top"（最上位ウィンドウで遷移）
+        </a>
+    </div>
+
+    <div class="log">
+        <h3>操作ログ</h3>
+        <div id="child-log">
+            <div class="log-entry">子ページが読み込まれました</div>
+        </div>
+    </div>
+
+    <script>
+        // ログ関数
+        function addLog(message) {
+            const logDiv = document.getElementById('child-log');
+            const entry = document.createElement('div');
+            entry.className = 'log-entry';
+            entry.textContent = new Date().toLocaleTimeString() + ' - ' + message;
+            logDiv.insertBefore(entry, logDiv.firstChild);
+        }
+
+        // postMessageを使った遷移
+        function navigateWithPostMessage() {
+            addLog('postMessageを送信します...');
+            
+            // 親ウィンドウにメッセージを送信
+            window.parent.postMessage({
+                action: 'navigate',
+                url: 'https://www.example.com'
+            }, '*'); // 本番環境では'*'の代わりに具体的なオリジンを指定
+            
+            addLog('postMessageを送信しました');
+        }
+
+        // 親ページを直接遷移（同一オリジンの場合のみ動作）
+        function navigateParentDirect() {
+            addLog('親ページの直接遷移を試みます...');
+            
+            try {
+                window.parent.location.href = 'https://www.example.com';
+                addLog('親ページを遷移しました（同一オリジンの場合）');
+            } catch (e) {
+                addLog('エラー: クロスオリジンのため直接遷移できません');
+                alert('クロスオリジンのため、親ページを直接遷移できません。\npostMessageを使用してください。');
+            }
+        }
+
+        // iframe内かどうかを確認
+        if (window.parent !== window) {
+            addLog('このページはiframe内で実行されています');
+        } else {
+            addLog('このページは通常のウィンドウで実行されています');
+        }
+    </script>
+</body>
+</html>
