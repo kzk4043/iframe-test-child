@@ -1,5 +1,5 @@
 {
-  "name": "worker-name",
+  "name": "iframe-test-child",
   "compatibility_date": "2025-09-10",
   "assets": {
     "directory": "./"
